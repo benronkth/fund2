@@ -5,14 +5,21 @@ package fund2;
 
 import org.eclipse.jetty.server.Server;
 
+import fund2.functions.Git;
+import fund2.functions.Gradle;
+
 public class App {
 
     // used to start the CI server in command line
     public static void main(String[] args) throws Exception
     {
-        Server server = new Server(80);
-        server.setHandler(new ContinuousIntegrationServer()); 
-        server.start();
-        server.join();
+        Git.fetch();
+        Git.switchTo("martin-test");
+        Gradle.test();
+        Gradle.build();
+        //Server server = new Server(80);
+        //server.setHandler(new ContinuousIntegrationServer()); 
+        //server.start();
+        //server.join();
     }
 }
