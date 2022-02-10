@@ -13,9 +13,10 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 public class App {
 
+    public static Dotenv dotenv = Dotenv.load();
+
     // used to start the CI server in command line
     public static void main(String[] args) throws Exception {
-        Dotenv dotenv = Dotenv.load();
         int port = Integer.parseInt(dotenv.get("PORT"));
         Server server = new Server(port);
         server.setHandler(new ContinuousIntegrationServer());

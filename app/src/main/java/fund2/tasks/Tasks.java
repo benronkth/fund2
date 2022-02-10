@@ -11,19 +11,30 @@ public class Tasks {
     /**
      * Run gradle tests on the latest commit of a branch
      *
-     * @param branch Name of a git branch
+     * @param branch     Name of a git branch
+     * @param commitHash Commit hash (unique identifier) of the commit to test
      * @return Integer: the exit value of the series of tasks executions. As
      *         {@link Task#execute()},
      *         0 indicates normal termination, -1 exception, and any other integer
      *         the code of an error
      *         that occurred.
      */
-    public static int gitTest(String branch) {
-        return Tasks.all(new Task[] {
+    public static int gitTest(String branch, String commitHash) {
+        int result = Tasks.all(new Task[] {
+                Notification.github(commitHash, "pending", ""),
+                Notification.discord(commitHash, branch, "test pending", "", Notification.PENDING),
                 Git.fetch(),
                 Git.switchTo(branch),
                 Gradle.test(),
+                Notification.github(commitHash, "success", ""),
+                Notification.discord(commitHash, branch, "test success", "", Notification.SUCCESS),
         });
+        if (result != 0) {
+            String error = "Test failed with code" + result;
+            Notification.github(commitHash, "failure", error).execute();
+            Notification.discord(commitHash, branch, "test failure", error, Notification.FAILURE).execute();
+        }
+        return result;
     }
 
     /**
@@ -40,21 +51,22 @@ public class Tasks {
     public static int gitBuild(String branch, String commitHash) {
         String buildName = branch + "-" + commitHash + ".jar";
         int result = Tasks.all(new Task[] {
-                // Notification.updateStatus(commitHash, "pending", ""),
-                Notification.webhookDiscord(commitHash, "pending", ""),
+                Notification.github(commitHash, "pending", ""),
+                Notification.discord(commitHash, branch, "build pending", "", Notification.PENDING),
                 Git.fetch(),
                 Git.switchTo(branch),
                 Gradle.build(),
                 File.copy("./app/build/libs/app-all.jar", "./app/build/archive/" + buildName),
                 File.copy("./app/build/libs/app-all.jar", "./app/build/archive/latest.jar"),
-                // Notification.updateStatus(commitHash, "success", ""),
-                Notification.webhookDiscord(commitHash, "success", ""),
-                Systemd.restart("fund2")
+                Notification.github(commitHash, "success", ""),
+                Notification.discord(commitHash, branch, "build success", "", Notification.SUCCESS),
         });
-        if (result != 0) {
-            // Notification.updateStatus(commitHash, "failure", "Build failed with code
-            // "+result).execute();
-            Notification.webhookDiscord(commitHash, "failure", "Build failed with code " + result).execute();
+        if (result == 0) {
+            Systemd.restart("fund2").execute();
+        } else {
+            String error = "Build failed with code" + result;
+            Notification.github(commitHash, "failure", error).execute();
+            Notification.discord(commitHash, branch, "build failure", error, Notification.FAILURE).execute();
         }
         return result;
     }
@@ -75,7 +87,7 @@ public class Tasks {
     public static int all(Task[] tasks) {
 
         for (Task task : tasks) {
-            System.out.println("=== Beginning task \"" + task.command + "\"");
+            System.out.println("=== Beginning task \"" + task.name + "\"");
             int result = task.execute();
             if (result != 0) {
                 System.out.println("=== Task failed with code " + result);
