@@ -10,6 +10,6 @@ public class SimpleApp {
     }
 
     public static boolean getFalse() {
-        return false;
+        return true;
     }
 }
