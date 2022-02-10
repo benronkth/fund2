@@ -5,11 +5,15 @@ package fund2;
 
 import org.eclipse.jetty.server.Server;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 public class App {
 
     // used to start the CI server in command line
     public static void main(String[] args) throws Exception {
-        Server server = new Server(8080);
+        Dotenv dotenv = Dotenv.load();
+        int port = Integer.parseInt(dotenv.get("PORT"));
+        Server server = new Server(port);
         server.setHandler(new ContinuousIntegrationServer());
         server.start();
         server.join();
