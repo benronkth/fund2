@@ -9,7 +9,7 @@ public class Notification {
     }
 
     public static Task webhookDiscord (String commitHash, String status, String description) {
-        String urlBOT = "https://discord.com/api/webhooks/935845248020668437/jvRRTNotN2QMOIeB6PSV6OcDNNFkeKs4BiP83sDQHB5egQqEW3l5Gy6lKw-UZQwbLs6l";
+        String urlBOT = "https://discord.com/api/webhooks/940992021664002058/BBqOrNymR6SgjCUlgBv2BUvyahkNRdIZz-6GDjAzHIKvz5m1teqbO1qr4b0HYkTaY4ps";
         String title = "Commit "+commitHash;
         String message = "Status: "+status+(status.equals("failure")? ", "+description:"");
         String color = (status.equals("success")? "5887123":(status.equals("failure")? "15025485":"16246360"));
