@@ -102,6 +102,7 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         String ref = json.getString("ref");
         String commit = json.getString("after");
         String branch = ref.replace("refs/head/", "");
+        branch = branch.replace("refs/heads/", "");
         Tasks.gitTest(branch, commit);
         if (branch.equals("main")) {
             Tasks.gitBuild(branch, commit);
