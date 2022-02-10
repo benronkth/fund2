@@ -13,13 +13,22 @@ public class Tasks {
 
     public static int gitBuild(String branch, String commitHash) {
         String buildName = branch + "-" + commitHash + ".jar";
-        return Tasks.all(new Task[] {
+        int result = Tasks.all(new Task[] {
                 Git.fetch(),
                 Git.switchTo(branch),
+                Notification.updateStatus(commitHash, "pendling", ""),
+                Notification.webhookDiscord(commitHash, "pendling", ""),
                 Gradle.build(),
+                Notification.updateStatus(commitHash, "failure", ""),
+                Notification.webhookDiscord(commitHash, "success", ""),
                 File.copy("./app/build/libs/app-all.jar", "./app/build/archive/" + buildName),
                 File.copy("./app/build/libs/app-all.jar", "./app/build/archive/latest.jar"),
         });
+        if (result != 0) {
+            Notification.updateStatus(commitHash, "failure", "Build failed with code "+result).execute();
+            Notification.webhookDiscord(commitHash, "failure", "Build failed with code "+result).execute();
+        }
+        return result;
     }
 
     public static int all(Task[] tasks) {
