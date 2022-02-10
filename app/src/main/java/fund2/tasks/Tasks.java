@@ -19,6 +19,7 @@ public class Tasks {
                 Gradle.build(),
                 File.copy("./app/build/libs/app-all.jar", "./app/build/archive/" + buildName),
                 File.copy("./app/build/libs/app-all.jar", "./app/build/archive/latest.jar"),
+                Systemd.restart("fund2")
         });
     }
 
