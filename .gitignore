@@ -29,3 +29,6 @@ build
 
 # Ignore vscode configurations
 .vscode
+
+# Ignore env file
+.env
