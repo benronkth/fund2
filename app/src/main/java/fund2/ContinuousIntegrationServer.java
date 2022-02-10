@@ -17,9 +17,16 @@ import fund2.tasks.Tasks;
 
 /**
  * Skeleton of a ContinuousIntegrationServer which acts as webhook
+ * @see <a href="https://github.com/KTH-DD2480/smallest-java-ci">https://github.com/KTH-DD2480/smallest-java-ci</a>
  * See the Jetty documentation for API documentation of those classes.
  */
 public class ContinuousIntegrationServer extends AbstractHandler {
+
+    /**
+     * Handle requests sent from the GitHub webhook after push events on the project repository.
+     * An action is performed only if the content is a JSON object sent on "/push" path.
+     * Calls the "OnPush" method to perform the build and tests of the corresponding commit.
+     */
     @Override
     public void handle(String target,
             Request baseRequest,
@@ -53,14 +60,12 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
 
-        // here you do all the continuous integration tasks
-        // for example
-        // 1st clone your repository
-        // 2nd compile the code
-
         response.getWriter().println("CI job done");
     }
 
+    /**
+     * Send a 200 response to the GitHub server
+     */
     public static void respondOK(String payload,
             Request baseRequest,
             HttpServletResponse response) {
@@ -77,6 +82,13 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         }
     }
 
+    /**
+     * Launch the build and tests on the commit which hash and branch are contained in the JSON
+     * object received from the GitHub webhook after a push event. The commit is build only if
+     * on the main branch
+     *
+     * @param json A JSON object sent by GitHub webhook containing all the information about a commit
+     */
     public static void onPush(JSONObject json) {
         System.out.println("Got push");
         String ref = json.getString("ref");

@@ -1,5 +1,10 @@
 package fund2.tasks;
 
+/**
+ * Class containing static methods dealing with systemd systems. Each action is
+ * transposed into a static method returning a Task "storing" the corresponding console command.
+ */
+
 public class Systemd {
 
     public static Task start(String service) {
