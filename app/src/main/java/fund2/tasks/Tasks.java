@@ -14,18 +14,18 @@ public class Tasks {
     public static int gitBuild(String branch, String commitHash) {
         String buildName = branch + "-" + commitHash + ".jar";
         int result = Tasks.all(new Task[] {
+                //Notification.updateStatus(commitHash, "pending", ""),
+                Notification.webhookDiscord(commitHash, "pending", ""),
                 Git.fetch(),
                 Git.switchTo(branch),
-                Notification.updateStatus(commitHash, "pendling", ""),
-                Notification.webhookDiscord(commitHash, "pendling", ""),
                 Gradle.build(),
-                Notification.updateStatus(commitHash, "failure", ""),
-                Notification.webhookDiscord(commitHash, "success", ""),
                 File.copy("./app/build/libs/app-all.jar", "./app/build/archive/" + buildName),
                 File.copy("./app/build/libs/app-all.jar", "./app/build/archive/latest.jar"),
+                //Notification.updateStatus(commitHash, "success", ""),
+                Notification.webhookDiscord(commitHash, "success", ""),
         });
         if (result != 0) {
-            Notification.updateStatus(commitHash, "failure", "Build failed with code "+result).execute();
+            //Notification.updateStatus(commitHash, "failure", "Build failed with code "+result).execute();
             Notification.webhookDiscord(commitHash, "failure", "Build failed with code "+result).execute();
         }
         return result;
