@@ -7,6 +7,10 @@ import org.eclipse.jetty.server.Server;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
+/**
+ * Main class that creates and start the Continuous Integration server
+ */
+
 public class App {
 
     // used to start the CI server in command line
