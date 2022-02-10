@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.util.ajax.JSONObjectConvertor;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,6 +45,7 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         }
 
         if (target.equals("/push")) {
+            respondOK("CI received push payload", baseRequest, response);
             onPush(jsonObject);
         }
 
@@ -59,6 +59,22 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         // 2nd compile the code
 
         response.getWriter().println("CI job done");
+    }
+
+    public static void respondOK(String payload,
+            Request baseRequest,
+            HttpServletResponse response) {
+        response.setContentType("text/html;charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        baseRequest.setHandled(true);
+
+        try {
+            response.getWriter().println(payload);
+            System.out.println("Sent response");
+        } catch (IOException err) {
+            System.out.println(err);
+            return;
+        }
     }
 
     public static void onPush(JSONObject json) {
