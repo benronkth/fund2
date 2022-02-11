@@ -15,4 +15,8 @@ public class Git {
     public static Task switchTo(String branch) {
         return new CmdTask("git switch " + branch);
     }
+
+    public static Task pull() {
+        return new CmdTask("git pull");
+    }
 }
