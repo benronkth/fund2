@@ -22,7 +22,7 @@ Clone the project and navigate to the project folder. You can then run the code 
 
 # Contributions
 
-This project has been done by the members of Group 20: 
+We are trying to get P+ (by doing P8 and P9). This project has been done by the members of Group 20: 
 
 - Chloé Porion, porion@kth.se 
     - CI server notification implementation
