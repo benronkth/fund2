@@ -5,6 +5,8 @@ This repository includes code for implementing a basic CI server. The implementa
 # Test Execuation
 Test execuation is done using Gradle. When the CI server gets a push, new changes are fetched using ```git fetch```. Then the CI server checks out the main branch using ```git checkout main``` and then the code is tested using ```./gradlew test```.
 
+Test update readme
+
 
 # How to compile
 
