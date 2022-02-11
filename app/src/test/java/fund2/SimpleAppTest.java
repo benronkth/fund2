@@ -16,7 +16,7 @@ public class SimpleAppTest {
 
     @Test public void assertFalseTest() {
         SimpleApp simpleApp = new SimpleApp();
-        assertFalse(simpleApp.getFalse());
+        assertTrue(simpleApp.getFalse());
     }
 
 }
