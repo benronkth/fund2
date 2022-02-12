@@ -1,7 +1,7 @@
 package fund2.tasks;
 
 /**
- * Abstract class represeting a single task to be executed in the future
+ * Abstract class representing a single task to be executed in the future
  */
 
 public abstract class Task {
