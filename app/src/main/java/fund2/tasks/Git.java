@@ -8,15 +8,11 @@ package fund2.tasks;
  */
 
 public class Git {
-    public static Task fetch() {
-        return new CmdTask("git fetch");
-    }
-
     public static Task switchTo(String branch) {
         return new CmdTask("git switch " + branch);
     }
 
-    public static Task pull() {
-        return new CmdTask("git pull");
+    public static Task cloneRepo() {
+        return new CmdTask("git clone git@github.com:fund-team/fund2.git .");
     }
 }

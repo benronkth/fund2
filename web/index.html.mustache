@@ -1,0 +1,28 @@
+<html>
+
+<body>
+    <h1>Group 20 CI server</h1>
+    <ul class="branches">
+        {{#branches}}
+        <li class="branch">
+            <p>{{name}}</p>
+            <ul>
+            {{#commits}}
+                <li>
+                    {{hash}}
+                    {{#test}}
+                        <p>test: {{.}}, <a href="/logs/{{name}}/{{hash}}/test">logs</a></p>
+                    {{/test}}
+                    {{#build}}
+                        <p>build: {{.}}, <a href="/logs/{{name}}/{{hash}}/build">logs</a></p>
+                        <a href="/builds/{{name}}/{{hash}}">build.jar</a>
+                    {{/build}}
+                </li>
+            {{/commits}}
+            </ul>
+        </li>
+        {{/branches}}
+    </ul>
+</body>
+
+</html>

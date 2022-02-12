@@ -20,6 +20,5 @@ public abstract class Task {
      *         -1 is for an exception, and any other integer corresponds to the code
      *         of an error that occurred.
      */
-    public abstract int execute();
-
+    public abstract TaskResult execute();
 }

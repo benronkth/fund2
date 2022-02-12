@@ -14,7 +14,6 @@ public class Notification {
         JSONObject json = new JSONObject();
         json.put("state", status);
         json.put("description", description);
-        System.out.println("Update commit status to " + status);
         String user = App.dotenv.get("GITHUBUSER");
         String token = App.dotenv.get("GITHUBTOKEN");
         String url = "https://api.github.com/repos/fund-team/fund2/statuses/" + commitHash;
@@ -23,6 +22,9 @@ public class Notification {
 
     public static Task discord(String commitHash, String branch, String status, String description,
             String color) {
+        if (App.dotenv.get("DEBUG", "").equals("true")) {
+            return new EmptyTask();
+        }
         String title = "Commit " + commitHash + " on " + branch;
         String message = "Status: " + status + " " + description;
         JSONObject json = new JSONObject();

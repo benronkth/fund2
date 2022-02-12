@@ -27,7 +27,8 @@ public class HttpTask extends Task {
     }
 
     @Override
-    public int execute() {
+    public TaskResult execute() {
+        TaskResult result = new TaskResult();
         try {
             URL url = new URL(this.url);
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -44,13 +45,19 @@ public class HttpTask extends Task {
             OutputStream stream = http.getOutputStream();
             stream.write(out);
 
-            System.out.println(http.getResponseCode() + " " + http.getResponseMessage());
+            result.addLogLine(http.getResponseCode() + " " + http.getResponseMessage());
             http.disconnect();
+            if (http.getResponseCode() >= 300) {
+                result.exitCode = http.getResponseCode();
+            } else {
+                result.exitCode = 0;
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return -1;
+            result.addLogLine("Error occured, see CI server logs");
+            result.exitCode = -1;
         }
-        return 0;
+        return result;
 
     }
 }

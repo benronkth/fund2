@@ -1,5 +1,7 @@
 package fund2.tasks;
 
+import java.io.File;
+
 /**
  * Class containing the two static method to build and test a commit from its
  * branch and hash.
@@ -13,28 +15,36 @@ public class Tasks {
      *
      * @param branch     Name of a git branch
      * @param commitHash Commit hash (unique identifier) of the commit to test
-     * @return Integer: the exit value of the series of tasks executions. As
+     * @return TaskResult: the results from executing all tasks
      *         {@link Task#execute()},
-     *         0 indicates normal termination, -1 exception, and any other integer
+     *         exit code 0 indicates normal termination, -1 exception, and any other
+     *         integer
      *         the code of an error
      *         that occurred.
      */
-    public static int gitTest(String branch, String commitHash) {
-        int result = Tasks.all(new Task[] {
+    public static TaskResult gitTest(String branch, String commitHash) {
+        String workingDir = "./tests/" + branch + "/" + commitHash;
+        String resultDir = "./results/" + branch + "/" + commitHash;
+        TaskResult result = Tasks.all(new Task[] {
                 Notification.github(commitHash, "pending", ""),
                 Notification.discord(commitHash, branch, "test pending", "", Notification.PENDING),
-                Git.fetch(),
+                FileUtils.mkDirs(workingDir),
+                FileUtils.mkDirs(resultDir),
+                FileUtils.setWorkingDir(workingDir),
+                Git.cloneRepo(),
                 Git.switchTo(branch),
-                Git.pull(),
                 Gradle.test(),
+                FileUtils.setWorkingDir("."),
+                FileUtils.remove(workingDir),
                 Notification.github(commitHash, "success", ""),
                 Notification.discord(commitHash, branch, "test success", "", Notification.SUCCESS),
         });
-        if (result != 0) {
-            String error = "Test failed with code" + result;
+        if (result.exitCode != 0) {
+            String error = "Test failed with code " + result.exitCode;
             Notification.github(commitHash, "failure", error).execute();
             Notification.discord(commitHash, branch, "test failure", error, Notification.FAILURE).execute();
         }
+        result.save(resultDir, "test");
         return result;
     }
 
@@ -43,33 +53,40 @@ public class Tasks {
      *
      * @param branch     Name of a git branch
      * @param commitHash Commit hash (unique identifier) of the commit to build
-     * @return Integer: the exit value of the series of tasks executions. As
+     * @return TaskResult: the results from executing all tasks
      *         {@link Task#execute()},
-     *         0 indicates normal termination, -1 exception, and any other integer
+     *         exit code 0 indicates normal termination, -1 exception, and any other
+     *         integer
      *         the code of an error
      *         that occurred.
      */
-    public static int gitBuild(String branch, String commitHash) {
-        String buildName = branch + "-" + commitHash + ".jar";
-        int result = Tasks.all(new Task[] {
+    public static TaskResult gitBuild(String branch, String commitHash) {
+        String workingDir = "./builds/" + branch + "/" + commitHash;
+        String resultDir = "./results/" + branch + "/" + commitHash;
+        TaskResult result = Tasks.all(new Task[] {
                 Notification.github(commitHash, "pending", ""),
                 Notification.discord(commitHash, branch, "build pending", "", Notification.PENDING),
-                Git.fetch(),
+                FileUtils.mkDirs(workingDir),
+                FileUtils.mkDirs(resultDir),
+                FileUtils.setWorkingDir(workingDir),
+                Git.cloneRepo(),
                 Git.switchTo(branch),
-                Git.pull(),
                 Gradle.build(),
-                File.copy("./app/build/libs/app-all.jar", "./app/build/archive/" + buildName),
-                File.copy("./app/build/libs/app-all.jar", "./app/build/archive/latest.jar"),
+                FileUtils.setWorkingDir("."),
+                FileUtils.copy(workingDir + "/app/build/libs/app-all.jar", resultDir + "/build.jar"),
+                FileUtils.copy(workingDir + "/app/build/libs/app-all.jar", "./latest.jar"),
+                FileUtils.remove(workingDir),
                 Notification.github(commitHash, "success", ""),
                 Notification.discord(commitHash, branch, "build success", "", Notification.SUCCESS),
         });
-        if (result == 0) {
+        if (result.exitCode == 0) {
             Systemd.restart("fund2").execute();
         } else {
-            String error = "Build failed with code" + result;
+            String error = "Build failed with code " + result.exitCode;
             Notification.github(commitHash, "failure", error).execute();
             Notification.discord(commitHash, branch, "build failure", error, Notification.FAILURE).execute();
         }
+        result.save(resultDir, "build");
         return result;
     }
 
@@ -86,17 +103,20 @@ public class Tasks {
      *         the code of an error
      *         that occurred.
      */
-    public static int all(Task[] tasks) {
-
+    public static TaskResult all(Task[] tasks) {
+        TaskResult totalResult = new TaskResult();
         for (Task task : tasks) {
-            System.out.println("=== Beginning task \"" + task.name + "\"");
-            int result = task.execute();
-            if (result != 0) {
-                System.out.println("=== Task failed with code " + result);
-                return result;
+            totalResult.addLogLine("=== Beginning task \"" + task.name + "\"");
+            TaskResult result = task.execute();
+            totalResult.log.addAll(result.log);
+            if (result.exitCode != 0) {
+                totalResult.addLogLine("=== Task failed with code " + result.exitCode);
+                totalResult.exitCode = result.exitCode;
+                return totalResult;
             }
-            System.out.println("=== Task completed");
+            totalResult.addLogLine("=== Task completed");
         }
-        return 0;
+        totalResult.exitCode = 0;
+        return totalResult;
     }
 }
