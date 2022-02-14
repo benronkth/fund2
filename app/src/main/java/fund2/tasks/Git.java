@@ -1,5 +1,7 @@
 package fund2.tasks;
 
+import fund2.App;
+
 /**
  * Class containing static methods dealing with git actions. Each action is
  * transposed
@@ -13,6 +15,7 @@ public class Git {
     }
 
     public static Task cloneRepo() {
-        return new CmdTask("git clone git@github.com:fund-team/fund2.git .");
+        String url = App.dotenv.get("REPOURL");
+        return new CmdTask("git clone " + url + " .");
     }
 }
