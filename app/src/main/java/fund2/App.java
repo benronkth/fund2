@@ -15,8 +15,16 @@ public class App {
 
     public static Dotenv dotenv = Dotenv.load();
 
-    // used to start the CI server in command line
     public static void main(String[] args) throws Exception {
+        startServer();
+    }
+
+    /**
+     * Starts the Jetty server
+     * 
+     * @throws Exception
+     */
+    public static void startServer() throws Exception {
         int port = Integer.parseInt(dotenv.get("PORT"));
         Server server = new Server(port);
         server.setHandler(new ContinuousIntegrationServer());

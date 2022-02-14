@@ -27,7 +27,7 @@ public class ContinuousIntegrationServer extends AbstractHandler {
     /**
      * Handle requests sent from the GitHub webhook after push events on the project
      * repository.
-     * An action is performed only if the content is a JSON object sent on "/push"
+     * Tasks are performed only if the content is a JSON object sent on "/push"
      * path.
      * Calls the "OnPush" method to perform the build and tests of the corresponding
      * commit.
@@ -38,6 +38,29 @@ public class ContinuousIntegrationServer extends AbstractHandler {
             HttpServletRequest request,
             HttpServletResponse response)
             throws IOException, ServletException {
+
+        if (target.equals("") || target.equals("/")) {
+            response.setContentType("text/html;charset=utf-8");
+            response.setStatus(HttpServletResponse.SC_OK);
+            baseRequest.setHandled(true);
+
+            response.getWriter().write(Website.getIndex());
+            return;
+        }
+
+        if (target.split("/")[1].equals("logs")) {
+            response.setContentType("text/text;charset=utf-8");
+            response.setStatus(HttpServletResponse.SC_OK);
+            baseRequest.setHandled(true);
+
+            response.getWriter().write(Website.getLogs(target));
+            return;
+        }
+
+        if (target.split("/")[1].equals("builds")) {
+            Website.downloadBuild(request, response, target);
+            return;
+        }
 
         String result = "";
 
@@ -59,6 +82,7 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         if (target.equals("/push")) {
             respondOK("CI received push payload", baseRequest, response);
             onPush(jsonObject);
+            return;
         }
 
         response.setContentType("text/html;charset=utf-8");

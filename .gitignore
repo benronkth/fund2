@@ -32,3 +32,9 @@ build
 
 # Ignore env file
 .env
+
+# CI server files
+results/
+builds/
+tests/
+latest.jar
