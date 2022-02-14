@@ -22,7 +22,9 @@ Clone the project and navigate to the project folder. You can then run the code 
 
 # Contributions
 
-We are trying to get P+ (by doing P8 and P9). This project has been done by the members of Group 20: 
+We are trying to get P+ (by doing P7, P8 and P9). We have implemented a self updating server that restarts itself that we are proud of in our project. There is no need to manually restart the server, after each successful build the server restarts automatically and starts running the new code. 
+
+We have also created a log website (in order to fulfil P7) which we also are proud of. The website that logs the events can be found at [http://sofen.obreykov.com](http://sofen.obreykov.com). This project has been done by the members of Group 20: 
 
 - Chloé Porion, porion@kth.se 
     - CI server notification implementation
