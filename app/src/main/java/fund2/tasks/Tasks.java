@@ -79,6 +79,7 @@ public class Tasks {
                 Notification.github(commitHash, "success", ""),
                 Notification.discord(commitHash, branch, "build success", "", Notification.SUCCESS),
         });
+        result.save(resultDir, "build");
         if (result.exitCode == 0) {
             Systemd.restart("fund2").execute();
         } else {
@@ -86,7 +87,6 @@ public class Tasks {
             Notification.github(commitHash, "failure", error).execute();
             Notification.discord(commitHash, branch, "build failure", error, Notification.FAILURE).execute();
         }
-        result.save(resultDir, "build");
         return result;
     }
 
