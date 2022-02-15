@@ -23,8 +23,8 @@ public class Tasks {
      *         that occurred.
      */
     public static TaskResult gitTest(String branch, String commitHash) {
-        String workingDir = "./tests/" + branch + "/" + commitHash;
-        String resultDir = "./results/" + branch + "/" + commitHash;
+        String workingDir = "./tests/" + branch.replaceAll("/", "-") + "/" + commitHash;
+        String resultDir = "./results/" + branch.replaceAll("/", "-") + "/" + commitHash;
         TaskResult result = Tasks.all(new Task[] {
                 Notification.github(commitHash, "pending", ""),
                 Notification.discord(commitHash, branch, "test pending", "", Notification.PENDING),
@@ -61,8 +61,8 @@ public class Tasks {
      *         that occurred.
      */
     public static TaskResult gitBuild(String branch, String commitHash) {
-        String workingDir = "./builds/" + branch + "/" + commitHash;
-        String resultDir = "./results/" + branch + "/" + commitHash;
+        String workingDir = "./builds/" + branch.replaceAll("/", "-") + "/" + commitHash;
+        String resultDir = "./results/" + branch.replaceAll("/", "-") + "/" + commitHash;
         TaskResult result = Tasks.all(new Task[] {
                 Notification.github(commitHash, "pending", ""),
                 Notification.discord(commitHash, branch, "build pending", "", Notification.PENDING),
