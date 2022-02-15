@@ -123,6 +123,10 @@ public class ContinuousIntegrationServer extends AbstractHandler {
      */
     public static void onPush(JSONObject json) {
         System.out.println("Got push");
+        if (json.getBoolean("deleted")) {
+            System.out.println("Branch got deleted, ignoring");
+            return;
+        }
         String ref = json.getString("ref");
         String commit = json.getString("after");
         String branch = ref.replace("refs/head/", "");
