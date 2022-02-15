@@ -16,6 +16,9 @@ public class Git {
 
     public static Task cloneRepo() {
         String url = App.dotenv.get("REPOURL");
+        if (url == null) {
+            url = "https://github.com/fund-team/fund2.git";
+        }
         return new CmdTask("git clone " + url + " .");
     }
 
