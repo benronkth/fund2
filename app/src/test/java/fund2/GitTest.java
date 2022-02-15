@@ -19,7 +19,7 @@ public class GitTest {
         FileUtils.mkDirs(workingDir).execute();
         FileUtils.setWorkingDir(workingDir).execute();
 
-        TaskResult results = Git.cloneRepo().execute();
+        TaskResult results = Git.cloneRepo("https://github.com/fund-team/fund2.git").execute();
 
         FileUtils.setWorkingDir(".").execute();
         FileUtils.remove(workingDir).execute();
