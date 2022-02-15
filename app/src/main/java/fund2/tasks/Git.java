@@ -18,4 +18,16 @@ public class Git {
         String url = App.dotenv.get("REPOURL");
         return new CmdTask("git clone " + url + " .");
     }
+
+    public static Task cloneRepo(String url) {
+        return new CmdTask("git clone " + url + " .");
+    }
+
+    public static String getBranchName() {
+        TaskResult result = new CmdTask("git rev-parse --abbrev-ref HEAD").execute();
+        if (result.exitCode != 0) {
+            return "";
+        }
+        return result.log.get(0);
+    }
 }
