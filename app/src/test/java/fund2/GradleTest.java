@@ -13,7 +13,7 @@ public class GradleTest {
 
     // Positive tests
     @Test
-    public void gradleBuildSuccessful () {
+    public void gradleBuildSuccessful() {
         // Create new directory and go in
         String workingDir = "./build/tmp/gradleBuildTest";
         FileUtils.mkDirs(workingDir).execute();
@@ -23,7 +23,7 @@ public class GradleTest {
         Git.cloneRepo("https://github.com/fund-team/fund2.git").execute();
 
         // Move one folder ahead
-        FileUtils.setWorkingDir(workingDir+"/fund2").execute();
+        FileUtils.setWorkingDir(workingDir).execute();
 
         // Build with gradle and take the result
         TaskResult result = Gradle.build().execute();
